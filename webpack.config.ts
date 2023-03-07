@@ -2,6 +2,7 @@ import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import { resolve } from "path";
 import { Configuration } from "webpack";
+import CopyPlugin from "copy-webpack-plugin";
 
 const config: Configuration = {
   target: "browserslist",
@@ -58,6 +59,20 @@ const config: Configuration = {
     new MiniCssExtractPlugin({
       filename: "static/css/[name].[contenthash:5].css",
       chunkFilename: "static/css/[name].[contenthash:5].css",
+    }),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: "./public",
+          filter: async (resourcePath) => {
+            // Do not copy html files. They are managed by HtmlWebpackPlugin
+            const ignoredExtention = "html";
+            const extention = resourcePath.split(".").at(-1);
+
+            return extention !== ignoredExtention;
+          },
+        },
+      ],
     }),
   ],
   optimization: {
